@@ -72,7 +72,7 @@
             <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
                 <h2 id="quiz-title" class="text-2xl font-bold text-teal-800 mb-2"></h2>
                 <p id="quiz-subtitle" class="text-stone-500 mb-6"></p>
-
+                
                 <div class="w-full bg-stone-200 rounded-full h-2.5 mb-6">
                     <div id="progress-bar" class="bg-teal-500 h-2.5 rounded-full progress-bar-fill" style="width: 0%"></div>
                 </div>
@@ -151,7 +151,7 @@
                         <h2 class="text-3xl font-bold text-teal-800 mb-2">RIASEC 직업 흥미 심층 분석</h2>
                         <p class="text-stone-600 mb-8">자신의 Holland 코드(상위 3개 흥미 유형)를 중심으로 관련 직업과 전공 계열을 탐색해 보세요.</p>
                         <div id="riasec-details" class="space-y-4 mb-10"></div>
-
+                        
                         <h3 class="text-2xl font-bold text-teal-800 mb-4">RIASEC 진로 탐색 대백과</h3>
                         <input type="text" id="career-search" placeholder="직업 또는 전공 검색..." class="w-full p-3 border border-stone-300 rounded-lg mb-4 focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
                         <div class="overflow-x-auto">
@@ -171,7 +171,7 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <!-- Synthesis Tab -->
                 <div id="synthesis-tab" class="tab-pane hidden">
                     <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
@@ -181,7 +181,7 @@
                     </div>
                 </div>
             </div>
-
+            
             <div class="text-center mt-12">
                 <button id="restart-btn" class="bg-teal-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-teal-700 transition-colors text-xl shadow-lg">다시 검사하기</button>
             </div>
@@ -227,12 +227,12 @@
         // 중요: 아래 firebaseConfig 객체를 당신의 Firebase 프로젝트 설정에서 복사한 값으로 교체하세요.
         // =================================================================================
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyDWOX6T7qsOu_bg0gBiWaXdIJZLzf7R4-E",
+            authDomain: "my-personality-test-41b0e.firebaseapp.com",
+            projectId: "my-personality-test-41b0e",
+            storageBucket: "my-personality-test-41b0e.firebasestorage.app",
+            messagingSenderId: "741288666261",
+            appId: "1:741288666261:web:8ebde812b7b58c737c279c"
         };
         // =================================================================================
 
@@ -506,7 +506,7 @@
                     }
                 }
             });
-
+            
             restartBtn.addEventListener('click', () => {
                 introSection.classList.remove('hidden');
                 resultsSection.classList.add('hidden');
