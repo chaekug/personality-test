@@ -204,7 +204,15 @@
         <section id="admin-section" class="hidden section-fade-in">
             <div id="admin-login" class="bg-white p-8 rounded-2xl shadow-lg max-w-md mx-auto">
                 <h2 class="text-2xl font-bold text-teal-800 mb-6 text-center">관리자 로그인</h2>
-                <input type="password" id="admin-password" placeholder="비밀번호를 입력하세요" class="w-full p-3 border border-stone-300 rounded-lg mb-4 focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
+                <div class="mb-4">
+                    <label for="admin-email" class="block text-stone-700 text-sm font-bold mb-2">이메일</label>
+                    <input type="email" id="admin-email" placeholder="관리자 이메일" class="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
+                </div>
+                <div class="mb-4">
+                    <label for="admin-password" class="block text-stone-700 text-sm font-bold mb-2">비밀번호</label>
+                    <input type="password" id="admin-password" placeholder="비밀번호" class="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
+                </div>
+                <p id="admin-error" class="text-red-500 text-sm mb-4 h-4"></p>
                 <button id="admin-login-btn" class="w-full bg-teal-600 text-white font-bold py-3 rounded-lg hover:bg-teal-700 transition-colors">로그인</button>
             </div>
 
@@ -235,7 +243,8 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
 
         // =================================================================================
         // 중요: 아래 firebaseConfig 객체를 당신의 Firebase 프로젝트 설정에서 복사한 값으로 교체하세요.
@@ -252,6 +261,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
         document.addEventListener('DOMContentLoaded', () => {
             const appData = {
