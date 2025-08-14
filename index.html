@@ -234,8 +234,7 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-        //import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
-        import { initializeApp } from "firebase/app";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
 
         // =================================================================================
@@ -424,7 +423,7 @@
                         { code: 'R', summary: '실용적, 신체적, 도구/기계 조작', major: '기계공학, 전기/전자공학, 건축학, 체육학, 농업생명과학, 조리학', job: '기술자, 엔지니어, 항공기 조종사/정비사, 소방관, 경찰관, 운동선수, 요리사, 건축가, 농부, 목수, 운전사, 군인' },
                         { code: 'I', summary: '분석적, 지적, 과학적/수학적 탐구', major: '자연과학(물리학, 화학, 생물학), 의/약학, 컴퓨터공학, 심리학, 사회과학, 경제학', job: '과학자, 의사, 약사, 수의사, 프로그래머, 데이터 분석가, 웹 개발자, 심리학자, 교수, 경제분석가, 변호사, 컨설턴트' },
                         { code: 'A', summary: '창의적, 표현적, 비구조적/심미적 활동', major: '미술, 음악, 디자인, 문예창작, 연극영화, 건축학, 광고홍보학', job: '화가, 음악가, 작가, 배우, 디자이너(패션, 그래픽, 제품), 건축사, 사진작가, 영화감독, 기자, 카피라이터, 웹툰 작가' },
-                        { code: 'S', summary: '협동적, 이타적, 타인 지원/교육', major: '교육학, 사회복지학, 상담심리학, 간호학, 신학, 언어치료학', job: '교사, 사회복지사, 상담사, 간호사, 언어치료사, 종교지도자, 인사(HR) 담당자, 고객 서비스 매니저, 마케팅 전문가' },
+                        { code: "S", summary: "협동적, 이타적, 타인 지원/교육", major: "교육학, 사회복지학, 상담심리학, 간호학, 신학, 언어치료학", job: "교사, 사회복지사, 상담사, 간호사, 언어치료사, 종교지도자, 인사(HR) 담당자, 고객 서비스 매니저, 마케팅 전문가" },
                         { code: 'E', summary: '설득적, 야망적, 리더십/경영 활동', major: '경영학, 경제학, 법학, 정치외교학, 광고홍보학, 호텔경영학', job: '경영인, CEO, 관리자, 영업사원, 변호사, 정치인, 펀드매니저, 부동산 중개인, 홍보 전문가, 판매 관리자, 컨설턴트' },
                         { code: 'C', summary: '체계적, 정확성, 데이터/규칙 관리', major: '회계학, 세무학, 통계학, 금융학, 문헌정보학, 법학, 행정학', job: '공인회계사, 세무사, 은행원, 사서, 법무사, 행정 공무원, 경리사원, 데이터베이스 관리자, 품질관리 전문가, 약사' },
                         { code: 'RI/IR', summary: '기술적 문제 해결, 연구 개발', major: '기계/전자공학, 컴퓨터공학, 산업공학, 생명공학', job: '연구개발(R&D) 엔지니어, 시스템 분석가, 의료기기 개발자, CAD 설계 전문가, 블록체인 전문가, 생체인식 전문가' },
@@ -482,7 +481,6 @@
             const restartBtn = document.getElementById('restart-btn');
             const adminLink = document.getElementById('admin-link');
             const adminLoginBtn = document.getElementById('admin-login-btn');
-            const adminEmailInput = document.getElementById('admin-email');
             const adminPasswordInput = document.getElementById('admin-password');
             const adminLoginSection = document.getElementById('admin-login');
             const adminResultsSection = document.getElementById('admin-results');
@@ -490,10 +488,9 @@
             const userNameInput = document.getElementById('user-name');
             const userBirthdateInput = document.getElementById('user-birthdate');
             const introError = document.getElementById('intro-error');
-            const adminError = document.getElementById('admin-error');
 
 
-            startBtn.addEventListener('click', async () => {
+            startBtn.addEventListener('click', () => {
                 const name = userNameInput.value.trim();
                 const birthdate = userBirthdateInput.value;
                 if (!name || !birthdate) {
@@ -502,14 +499,7 @@
                 }
                 introError.textContent = '';
                 userInfo = { name, birthdate };
-                
-                try {
-                    await signInAnonymously(auth);
-                    startQuiz('bigFive');
-                } catch (error) {
-                    console.error("Anonymous sign-in failed:", error);
-                    introError.textContent = '검사를 시작하는 데 실패했습니다. 잠시 후 다시 시도해주세요.';
-                }
+                startQuiz('bigFive');
             });
 
             prevBtn.addEventListener('click', () => {
@@ -546,15 +536,13 @@
             });
             
             restartBtn.addEventListener('click', () => {
-                signOut(auth).then(() => {
-                    introSection.classList.remove('hidden');
-                    resultsSection.classList.add('hidden');
-                    quizScores = {};
-                    userAnswers = {};
-                    userInfo = {};
-                    userNameInput.value = '';
-                    userBirthdateInput.value = '';
-                });
+                introSection.classList.remove('hidden');
+                resultsSection.classList.add('hidden');
+                quizScores = {};
+                userAnswers = {};
+                userInfo = {};
+                userNameInput.value = '';
+                userBirthdateInput.value = '';
             });
 
             adminLink.addEventListener('click', (e) => {
@@ -565,55 +553,23 @@
                 adminSection.classList.remove('hidden');
                 adminLoginSection.classList.remove('hidden');
                 adminResultsSection.classList.add('hidden');
-                adminEmailInput.value = '';
-                adminPasswordInput.value = '';
-                adminError.textContent = '';
             });
 
-            adminLoginBtn.addEventListener('click', async () => {
-                const email = adminEmailInput.value;
-                const password = adminPasswordInput.value;
-                adminError.textContent = '';
-
-                try {
-                    await signInWithEmailAndPassword(auth, email, password);
-                    // onAuthStateChanged will handle showing the admin results
-                } catch (error) {
-                    console.error("Admin sign-in failed:", error);
-                    adminError.textContent = '이메일 또는 비밀번호가 잘못되었습니다.';
+            adminLoginBtn.addEventListener('click', () => {
+                // For simplicity, using a hardcoded password. In a real app, use a secure auth system.
+                if (adminPasswordInput.value === 'admin123') {
+                    adminLoginSection.classList.add('hidden');
+                    adminResultsSection.classList.remove('hidden');
+                    loadAdminResults();
+                } else {
+                    alert('비밀번호가 틀렸습니다.');
                 }
             });
 
             adminLogoutBtn.addEventListener('click', () => {
-                signOut(auth);
-            });
-
-            onAuthStateChanged(auth, async (user) => {
-                if (user && !user.isAnonymous) {
-                    // Check if user is admin
-                    const adminDocRef = doc(db, "admins", user.uid);
-                    const adminDocSnap = await getDoc(adminDocRef);
-
-                    if (adminDocSnap.exists()) {
-                        // User is admin
-                        introSection.classList.add('hidden');
-                        quizSection.classList.add('hidden');
-                        resultsSection.classList.add('hidden');
-                        adminSection.classList.remove('hidden');
-                        adminLoginSection.classList.add('hidden');
-                        adminResultsSection.classList.remove('hidden');
-                        loadAdminResults();
-                    } else {
-                        // Logged in but not an admin, treat as logged out
-                        signOut(auth);
-                    }
-                } else {
-                    // User is anonymous or logged out
-                    adminSection.classList.add('hidden');
-                    if (!quizSection.classList.contains('hidden') && !resultsSection.classList.contains('hidden')) {
-                       introSection.classList.remove('hidden');
-                    }
-                }
+                adminSection.classList.add('hidden');
+                introSection.classList.remove('hidden');
+                adminPasswordInput.value = '';
             });
 
             async function saveResultsToFirebase() {
@@ -662,7 +618,7 @@
                     resultsBody.innerHTML = resultsHtml || '<tr><td colspan="6" class="text-center p-4">저장된 결과가 없습니다.</td></tr>';
                 } catch (e) {
                     console.error("Error loading documents: ", e);
-                    resultsBody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-red-500">결과를 불러오는 데 실패했습니다. Firestore 보안 규칙을 확인하세요.</td></tr>';
+                    resultsBody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-red-500">결과를 불러오는 데 실패했습니다.</td></tr>';
                 }
             }
 
