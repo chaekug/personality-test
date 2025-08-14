@@ -683,14 +683,12 @@
             function calculateScores() {
                 if (currentQuiz === 'bigFive') {
                     const scores = { N: 0, E: 0, O: 0, A: 0, C: 0 };
-                    const counts = { N: 0, E: 0, O: 0, A: 0, C: 0 };
                     appData.bigFive.questions.forEach((q, i) => {
                         let answer = userAnswers.bigFive[i];
                         if (q.score === -1) {
                             answer = 6 - answer;
                         }
                         scores[q.factor] += answer;
-                        counts[q.factor]++;
                     });
                     quizScores.bigFive = scores;
                 } else if (currentQuiz === 'riasec') {
@@ -699,6 +697,10 @@
                         scores[q.type] += userAnswers.riasec[i];
                     });
                     quizScores.riasec = scores;
+                    
+                    const sortedRiasec = Object.entries(scores).sort(([, a], [, b]) => b - a);
+                    const hollandCode = sortedRiasec.slice(0, 3).map(([key]) => key).join('');
+                    quizScores.riasecCode = hollandCode;
                 }
             }
 
@@ -858,10 +860,7 @@
                     }
                 });
 
-                const sortedRiasec = Object.entries(quizScores.riasec).sort(([, a], [, b]) => b - a);
-                const hollandCode = sortedRiasec.slice(0, 3).map(([key]) => key).join('');
-                quizScores.riasecCode = hollandCode;
-
+                const hollandCode = quizScores.riasecCode;
                 const detailsContainer = document.getElementById('riasec-details');
                 detailsContainer.innerHTML = '';
                 
@@ -870,7 +869,7 @@
                 summaryP.innerHTML = `당신의 Holland 코드는 <span class="text-teal-600">${hollandCode}</span> 입니다.`;
                 detailsContainer.appendChild(summaryP);
 
-                sortedRiasec.slice(0, 3).forEach(([type, score]) => {
+                hollandCode.split('').forEach(type => {
                     const interpretation = appData.riasec.interpretations[type];
                     const detailHtml = `
                         <div class="bg-stone-100 p-4 rounded-lg">
