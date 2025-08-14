@@ -234,7 +234,8 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        //import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { initializeApp } from "firebase/app";
         import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
 
         // =================================================================================
@@ -247,7 +248,7 @@
             storageBucket: "my-personality-test-41b0e.firebasestorage.app",
             messagingSenderId: "741288666261",
             appId: "1:741288666261:web:8ebde812b7b58c737c279c"
-        };
+            };
         // =================================================================================
 
         const app = initializeApp(firebaseConfig);
@@ -459,7 +460,7 @@
                     }
                 }
             };
-
+            
             let currentQuiz = '';
             let currentQuestionIndex = 0;
             let userAnswers = {};
@@ -481,6 +482,7 @@
             const restartBtn = document.getElementById('restart-btn');
             const adminLink = document.getElementById('admin-link');
             const adminLoginBtn = document.getElementById('admin-login-btn');
+            const adminEmailInput = document.getElementById('admin-email');
             const adminPasswordInput = document.getElementById('admin-password');
             const adminLoginSection = document.getElementById('admin-login');
             const adminResultsSection = document.getElementById('admin-results');
@@ -488,9 +490,10 @@
             const userNameInput = document.getElementById('user-name');
             const userBirthdateInput = document.getElementById('user-birthdate');
             const introError = document.getElementById('intro-error');
+            const adminError = document.getElementById('admin-error');
 
 
-            startBtn.addEventListener('click', () => {
+            startBtn.addEventListener('click', async () => {
                 const name = userNameInput.value.trim();
                 const birthdate = userBirthdateInput.value;
                 if (!name || !birthdate) {
@@ -499,7 +502,14 @@
                 }
                 introError.textContent = '';
                 userInfo = { name, birthdate };
-                startQuiz('bigFive');
+                
+                try {
+                    await signInAnonymously(auth);
+                    startQuiz('bigFive');
+                } catch (error) {
+                    console.error("Anonymous sign-in failed:", error);
+                    introError.textContent = '검사를 시작하는 데 실패했습니다. 잠시 후 다시 시도해주세요.';
+                }
             });
 
             prevBtn.addEventListener('click', () => {
@@ -536,13 +546,15 @@
             });
             
             restartBtn.addEventListener('click', () => {
-                introSection.classList.remove('hidden');
-                resultsSection.classList.add('hidden');
-                quizScores = {};
-                userAnswers = {};
-                userInfo = {};
-                userNameInput.value = '';
-                userBirthdateInput.value = '';
+                signOut(auth).then(() => {
+                    introSection.classList.remove('hidden');
+                    resultsSection.classList.add('hidden');
+                    quizScores = {};
+                    userAnswers = {};
+                    userInfo = {};
+                    userNameInput.value = '';
+                    userBirthdateInput.value = '';
+                });
             });
 
             adminLink.addEventListener('click', (e) => {
@@ -553,23 +565,55 @@
                 adminSection.classList.remove('hidden');
                 adminLoginSection.classList.remove('hidden');
                 adminResultsSection.classList.add('hidden');
+                adminEmailInput.value = '';
+                adminPasswordInput.value = '';
+                adminError.textContent = '';
             });
 
-            adminLoginBtn.addEventListener('click', () => {
-                // For simplicity, using a hardcoded password. In a real app, use a secure auth system.
-                if (adminPasswordInput.value === 'admin123') {
-                    adminLoginSection.classList.add('hidden');
-                    adminResultsSection.classList.remove('hidden');
-                    loadAdminResults();
-                } else {
-                    alert('비밀번호가 틀렸습니다.');
+            adminLoginBtn.addEventListener('click', async () => {
+                const email = adminEmailInput.value;
+                const password = adminPasswordInput.value;
+                adminError.textContent = '';
+
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    // onAuthStateChanged will handle showing the admin results
+                } catch (error) {
+                    console.error("Admin sign-in failed:", error);
+                    adminError.textContent = '이메일 또는 비밀번호가 잘못되었습니다.';
                 }
             });
 
             adminLogoutBtn.addEventListener('click', () => {
-                adminSection.classList.add('hidden');
-                introSection.classList.remove('hidden');
-                adminPasswordInput.value = '';
+                signOut(auth);
+            });
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user && !user.isAnonymous) {
+                    // Check if user is admin
+                    const adminDocRef = doc(db, "admins", user.uid);
+                    const adminDocSnap = await getDoc(adminDocRef);
+
+                    if (adminDocSnap.exists()) {
+                        // User is admin
+                        introSection.classList.add('hidden');
+                        quizSection.classList.add('hidden');
+                        resultsSection.classList.add('hidden');
+                        adminSection.classList.remove('hidden');
+                        adminLoginSection.classList.add('hidden');
+                        adminResultsSection.classList.remove('hidden');
+                        loadAdminResults();
+                    } else {
+                        // Logged in but not an admin, treat as logged out
+                        signOut(auth);
+                    }
+                } else {
+                    // User is anonymous or logged out
+                    adminSection.classList.add('hidden');
+                    if (!quizSection.classList.contains('hidden') && !resultsSection.classList.contains('hidden')) {
+                       introSection.classList.remove('hidden');
+                    }
+                }
             });
 
             async function saveResultsToFirebase() {
@@ -618,7 +662,7 @@
                     resultsBody.innerHTML = resultsHtml || '<tr><td colspan="6" class="text-center p-4">저장된 결과가 없습니다.</td></tr>';
                 } catch (e) {
                     console.error("Error loading documents: ", e);
-                    resultsBody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-red-500">결과를 불러오는 데 실패했습니다.</td></tr>';
+                    resultsBody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-red-500">결과를 불러오는 데 실패했습니다. Firestore 보안 규칙을 확인하세요.</td></tr>';
                 }
             }
 
